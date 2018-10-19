@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: cloudwatch-exporter
+  name: cloudwatch-exporter
+spec:
+  ports:
+    - name: prom
+      port: 9106
+      protocol: TCP
+      targetPort: 9106
+  selector:
+    app: cloudwatch-exporter
+  type: ClusterIP

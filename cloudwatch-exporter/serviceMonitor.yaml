@@ -1,0 +1,15 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: cloudwatch-exporter
+  name: cloudwatch-exporter
+spec:
+  jobLabel: cloudwatch-exporter
+  selector:
+    matchLabels:
+      app: cloudwatch-exporter
+  endpoints:
+  - port: prom
+    interval: 60s

@@ -1,0 +1,41 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudwatch-exporter
+  labels:
+    app: cloudwatch-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudwatch-exporter
+  template:
+    metadata:
+      labels:
+        app: cloudwatch-exporter
+    spec:
+      containers:
+      - name: cloudwatch-exporter
+        image: prom/cloudwatch-exporter
+        ports:
+        - containerPort: 9106
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: cloudwatch-exporter-aws
+              key: aws_access_key_id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: cloudwatch-exporter-aws
+              key: aws_secret_access_key
+        volumeMounts:
+        - name: cloudwatch-exporter-config
+          mountPath: /config
+          readOnly: true
+      volumes:
+      - name: cloudwatch-exporter-config
+        configMap:
+          name: cloudwatch-exporter-config
