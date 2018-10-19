@@ -1,0 +1,50 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: app-sre
+spec:
+  alerting:
+    alertmanagers:
+    - name: alertmanager-operated
+      port: web
+      scheme: http
+  baseImage: quay.io/prometheus/prometheus
+  externalLabels:
+    cluster: app-sre-dev
+  # externalUrl: 
+  # listenLocal: true
+  replicas: 1
+  # resources: {}
+  retention: 15d
+  ruleSelector:
+    matchLabels:
+      prometheus: app-sre
+      role: alert-rules
+  # secrets:
+  # - prometheus-app-sre-production-tls
+  # - prometheus-app-sre-production-proxy
+  # - prometheus-app-sre-production-htpasswd
+  securityContext: {}
+  serviceAccountName: prometheus-k8s
+  # serviceMonitorNamespaceSelector:
+  #   matchExpressions:
+  #   - key: openshift.io/cluster-monitoring
+  #     operator: Exists
+  serviceMonitorSelector:
+    matchLabels:
+      app: cloudwatch-exporter
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  # Cannot get a LE certificate on a generated route because CN is too long
+  #annotations:
+  #  kubernetes.io/tls-acme: "true"
+  name: prometheus-app-sre
+spec:
+  port:
+    targetPort: web
+  to:
+    kind: Service
+    name: prometheus-operated
+    weight: 100

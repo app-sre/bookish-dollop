@@ -1,0 +1,26 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: app-sre
+spec:
+  replicas: 1
+  retention: 15d
+  #externalUrl:
+  resources: {}
+  securityContext: {}
+  serviceAccountName: prometheus-k8s
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  # Cannot get a LE certificate on a generated route because CN is too long
+  #annotations:
+  #  kubernetes.io/tls-acme: "true"
+  name: alertmanager-app-sre
+spec:
+  port:
+    targetPort: web
+  to:
+    kind: Service
+    name: alertmanager-operated
+    weight: 100
