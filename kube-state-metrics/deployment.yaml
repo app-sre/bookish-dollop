@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-state-metrics
+  labels:
+    app: kube-state-metrics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kube-state-metrics
+  template:
+    metadata:
+      labels:
+        app: kube-state-metrics
+    spec:
+      containers:
+      - name: kube-state-metrics
+        image: quay.io/coreos/kube-state-metrics:v1.4.0
+        args:
+        - --namespace=$(MYNAMESPACE)
+        - --collectors=daemonsets,deployments,pods,replicasets,replicationcontrollers,services,jobs,cronjobs,statefulsets,persistentvolumeclaims,endpoints
+        env:
+        - name: MYNAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        ports:
+        - containerPort: 8080
+      serviceAccountName: kube-state-metrics
