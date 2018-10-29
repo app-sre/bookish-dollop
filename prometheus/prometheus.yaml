@@ -5,9 +5,10 @@ metadata:
 spec:
   alerting:
     alertmanagers:
-    - name: alertmanager-operated
+    - name: app-sre
       port: web
       scheme: http
+      namespace: app-sre-prometheus
   baseImage: quay.io/prometheus/prometheus
   externalLabels:
     cluster: app-sre-dev
